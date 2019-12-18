@@ -1,9 +1,11 @@
 const db = require('../db/db-config');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
   all,
   create,
-  findBy
+  findBy,
+  signToken
 };
 
 function all() {
@@ -18,11 +20,14 @@ function findBy(filter) {
   return db('users').where(filter)
 };
 
-// function create(user) {
-//   return db("users")
-//     .insert(user, "id")
-//     .then(ids => {
-//       const [id] = ids;
-//       return all();
-//     });
-// };
+function signToken(user) {
+  const payload = {
+    subject: user.id
+  };
+  const secret = process.env.JWT_SECRET || "senorita potatito del peru";
+  const options = {
+    expiresIn: '1h'
+  }
+
+  return jwt.sign(payload, secret, options)
+}

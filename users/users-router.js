@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
-const express = require('express');
-const router = express.Router();
-const Users = require('./users-model')
+const router = require('express').Router();
+const Users = require('./users-model');
 
 router.get('/', (req, res) => {
   Users.all()
@@ -29,13 +28,13 @@ router.post('/login', (req, res) => {
   Users.findBy({username}).first()
   .then(user => {
     if (user && bcrypt.compareSync(password, user.password)) {
-      res.json({msg: 'works'})
+      const token = Users.signToken(user);
+      res.json({token: token})
     } else {
-      res.json({msg: 'wrooooong'})
+      res.status(401).json({msg: 'You shall not pass!'})
     }
   })
-  .catch(err => res.json({msg: 'fuck this'}));
+  .catch(err => res.status(500).json({msg: 'fuck this'}));
 });
-
 
 module.exports = router;
