@@ -1,14 +1,7 @@
 const bcrypt = require('bcryptjs');
 const router = require('express').Router();
 const Users = require('./users-model');
-
-router.get('/', (req, res) => {
-  Users.all()
-  .then(users => {
-    res.json(users)
-  })
-  .catch(err => res.send(err));
-});
+const auth = require('./auth-middleware')
 
 router.post('/register', (req, res) => {
   let user = req.body;
@@ -35,6 +28,14 @@ router.post('/login', (req, res) => {
     }
   })
   .catch(err => res.status(500).json({msg: 'fuck this'}));
+});
+
+router.get('/users', auth, (req, res) => {
+  Users.all()
+  .then(users => {
+    res.json(users)
+  })
+  .catch(err => res.send(err));
 });
 
 module.exports = router;
